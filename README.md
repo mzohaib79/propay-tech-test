@@ -36,6 +36,10 @@ Run the database seeder
     
     php artisan db:seed
 
+also run 
+
+    npm install
+    npm run dev
 set the mail configuration in the .env file
 ## About Laravel
 
