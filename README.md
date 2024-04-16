@@ -41,6 +41,17 @@ also run
     npm install
     npm run dev
 set the mail configuration in the .env file
+
+Start the local development server
+
+    php artisan serve
+
+You can now access the server at http://localhost:8000
+
+Login credentials 
+
+    email: techtest@propay.com
+    password: 12345678
 ## About Laravel
 
 
