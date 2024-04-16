@@ -14,7 +14,7 @@ Please check the official laravel installation guide for server requirements bef
 
 Clone the repository
 
-Switch to the repo folder
+    git clone https://github.com/mzohaib79/propay-tech-test.git
 
 Install all the dependencies using composer
 
