@@ -10,18 +10,23 @@ use Illuminate\Database\Eloquent\Model;
 class UserService
 {
     /**
+     * @var UserRepositoryInterface
+     */
+    protected UserRepositoryInterface $userRepository;
+
+    /**
      * @param UserRepositoryInterface $userRepository
      */
-    public function __construct(protected UserRepositoryInterface $userRepository)
+    public function __construct(UserRepositoryInterface $userRepository)
     {
-
+        $this->userRepository = $userRepository;
     }
 
     /**
      * @param $data
-     * @return Builder|Model|mixed
+     * @return mixed
      */
-    public function create($data)
+    public function create($data): mixed
     {
         return $this->userRepository->create($data);
     }
@@ -56,14 +61,6 @@ class UserService
         return $this->userRepository->find($id, $with);
     }
 
-    /**
-     * @param $id
-     * @return mixed
-     */
-    public function findOneOrFail($id): mixed
-    {
-        return $this->userRepository->findOneOrFail($id);
-    }
 
     /**
      * @param $id

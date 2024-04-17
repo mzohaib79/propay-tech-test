@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\NewUserCreated;
 use App\Http\Requests\StoreUserRequest;
-use App\Services\UserInterestService;
+use App\Services\InterestService;
 use App\Services\UserService;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -14,12 +14,23 @@ use Yajra\DataTables\DataTables;
 class UserController extends Controller
 {
     /**
-     * @param UserService $userService
-     * @param UserInterestService $userInterestService
+     * @var UserService
      */
-    public function __construct(protected UserService $userService, protected UserInterestService $userInterestService)
-    {
+    protected UserService $userService;
 
+    /**
+     * @var InterestService
+     */
+    protected InterestService $interestService;
+
+    /**
+     * @param UserService $userService
+     * @param InterestService $interestService
+     */
+    public function __construct(UserService $userService, InterestService $interestService)
+    {
+        $this->userService = $userService;
+        $this->interestService = $interestService;
     }
 
     /**
@@ -31,21 +42,22 @@ class UserController extends Controller
     {
         if ($request->ajax()) {
             $userList = $this->userService->userList(['*'], ['interests']);
+
             return Datatables::of($userList)
                 ->addIndexColumn()
                 ->editColumn('interest', function ($user) {
+
                     if ($user->interests->isEmpty()) {
-                        return ''; // Return early if there are no interests
+                        return '';
                     }
 
-                    // Use the map method on the Eloquent collection to generate interest badges
                     $interestBadges = $user->interests->map(function ($interest) {
-                        // Use htmlspecialchars to prevent XSS
+
                         $interestName = htmlspecialchars($interest->name, ENT_QUOTES, 'UTF-8');
+
                         return '<span class="shadow-none badge badge-primary">' . $interestName . '</span>';
                     });
 
-                    // Join the badges into a single string using implode with a space separator
                     return $interestBadges->implode(' ');
 
                 })
@@ -56,7 +68,8 @@ class UserController extends Controller
                 ->make(true);
         }
 
-        $interests = $this->userInterestService->all();
+        $interests = $this->interestService->all();
+
         return view('user.index', compact('interests'));
     }
 
@@ -74,11 +87,13 @@ class UserController extends Controller
                 $user = $this->userService->create($request->all());
                 $message = 'User saved successfully';
             }
+
              $user->interests()->sync($request->interests);
 
             if (empty($request->user_id)) {
                 NewUserCreated::dispatch($user);
             }
+
             return response()->json([
                 'status' => 200,
                 'type' => 'success',
@@ -99,19 +114,20 @@ class UserController extends Controller
      * @param $id
      * @return mixed
      */
-    public function find($id): mixed
+    public function edit($id): mixed
     {
         return $this->userService->find($id, ['interests']);
     }
 
     /**
-     * @param $id
+     * @param int $id
      * @return JsonResponse
      */
     public function delete(int $id): JsonResponse
     {
         try {
             $this->userService->delete($id);
+
             return response()->json([
                 'status' => 200,
                 'type' => 'success',

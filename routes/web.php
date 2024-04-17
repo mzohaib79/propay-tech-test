@@ -12,7 +12,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('user.index');
     Route::prefix('user')->group(function () {
         Route::post('/save', [UserController::class, 'store'])->name('user.store');
-        Route::get('/find/{id}', [UserController::class, 'find'])->name('user.find');
+        Route::get('/edit/{id}', [UserController::class, 'edit'])->name('user.edit');
         Route::delete('/delete/{id}', [UserController::class, 'delete'])->name('user.delete');
     });
 
